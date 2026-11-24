@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Avatar Printer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Be+Vietnam+Pro:wght@500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div id="stage">
+
+  <!-- ============ NỬA TRÊN: MÁY IN ============ -->
+  <section id="printer">
+    <div class="table"></div>
+    <div class="paper-shadow"></div>
+    <div id="paper"><div id="strip"></div></div>
+
+    <!-- khung máy: 2 ray dọc + thanh ngang + đầu in -->
+    <div class="rail rail-left"></div>
+    <div class="rail rail-right"></div>
+    <div id="gantry">
+      <div class="bar"></div>
+      <div id="head"><div class="nozzle"></div><div class="led"></div></div>
+    </div>
+
+    <div class="printer-body"><div class="slot"></div><div class="brandplate">AVATAR&nbsp;PRINTER</div></div>
+  </section>
+
+  <!-- ============ DẢI GIỮA: TRẠNG THÁI ============ -->
+  <section id="nowbar">
+    <div id="now"><span class="dot"></span><span id="nowText">Tặng quà để được in!</span></div>
+    <div id="queue">Hàng chờ: <b id="queueN">0</b></div>
+  </section>
+
+  <!-- ============ NỬA DƯỚI: BRAND + MENU QUÀ ============ -->
+  <section id="bottom">
+    <video id="bgvideo" src="/static/media/bg.mp4" autoplay muted loop playsinline></video>
+    <div id="fire"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+
+    <div id="brand">
+      <div id="logo">S</div>
+      <div id="brandTitle">SHAN</div>
+      <div id="brandSub"></div>
+    </div>
+
+    <ul id="menu"></ul>
+
+    <div id="board">
+      <h3>🏆 Bảng vàng</h3>
+      <ol id="boardList"></ol>
+    </div>
+  </section>
+
+  <div id="toasts"></div>
+  <div id="legend" hidden><div class="legend-inner"><small>LEGENDARY VIPP</small><b id="legendName"></b></div></div>
+  <canvas id="fx"></canvas>
+</div>
+<script src="/static/app.js"></script>
+</body>
+</html>

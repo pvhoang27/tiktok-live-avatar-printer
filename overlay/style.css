@@ -1,0 +1,152 @@
+:root{
+  --W:1080px; --H:1920px;
+  --top:1040px;                 /* chiều cao vùng máy in */
+  --paper-w:640px;
+  --paper-x:220px;              /* (1080-640)/2 */
+  --gold:#f7c948;
+  --accent:#ff3b5c;
+  --ink:#1b1b1f;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;background:#000;overflow:hidden}
+body{font-family:"Be Vietnam Pro",system-ui,sans-serif;color:#fff}
+
+/* khung 1080x1920 được scale vừa cửa sổ (OBS: đặt Browser Source 1080x1920) */
+#stage{position:absolute;left:50%;top:50%;width:var(--W);height:var(--H);
+  transform-origin:center;overflow:hidden;background:#0b0b0d}
+
+/* ------------------------------------------------ máy in ---- */
+#printer{position:absolute;inset:0 0 auto 0;height:var(--top);overflow:hidden}
+.table{position:absolute;inset:0;
+  background:
+    repeating-linear-gradient(90deg,rgba(0,0,0,.10) 0 2px,transparent 2px 90px),
+    repeating-linear-gradient(90deg,rgba(255,255,255,.04) 0 1px,transparent 1px 23px),
+    linear-gradient(90deg,#6b3a1d,#8a4f28 18%,#7a4321 36%,#93582e 55%,#6f3c1e 74%,#8c5129);
+  filter:saturate(1.05)}
+.table::after{content:"";position:absolute;inset:0;
+  background:radial-gradient(120% 80% at 50% 40%,transparent 40%,rgba(0,0,0,.55))}
+
+.paper-shadow{position:absolute;left:calc(var(--paper-x) - 6px);width:calc(var(--paper-w) + 12px);
+  top:0;bottom:170px;background:rgba(0,0,0,.35);filter:blur(14px)}
+#paper{position:absolute;left:var(--paper-x);width:var(--paper-w);top:0;bottom:190px;
+  background:linear-gradient(90deg,#e9e6df,#fbfaf6 8%,#fff 50%,#fbfaf6 92%,#e4e0d8);
+  overflow:hidden}
+#strip{position:absolute;left:0;right:0;bottom:0;display:flex;flex-direction:column;
+  align-items:center;gap:26px;padding:0 0 30px;will-change:transform}
+
+/* tấm in */
+.sheet{position:relative;width:300px;height:340px;flex:none;
+  border:4px solid var(--ink);border-radius:6px;background:#fff;overflow:hidden}
+.sheet.big{width:520px;height:520px}
+.sheet.legendary{width:560px;height:560px;border:8px double #b8860b;
+  background:linear-gradient(135deg,#fff8e1,#fff,#fff3c4)}
+.sheet .ink{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:14px;clip-path:inset(0 0 100% 0)}
+.sheet .avatar{width:68%;aspect-ratio:1;border-radius:50%;object-fit:cover;
+  border:5px solid var(--ink);filter:contrast(1.06) saturate(1.1);background:#ddd}
+.sheet.legendary .avatar{border-color:#b8860b;box-shadow:0 0 0 6px #ffe58a}
+.sheet .name{font-family:"Dancing Script",cursive;color:#c2185b;font-size:38px;line-height:1;
+  max-width:92%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sheet.big .name{font-size:58px}
+.sheet.legendary .name{font-size:62px;
+  background:linear-gradient(90deg,#d4145a,#fbb03b,#d4145a);-webkit-background-clip:text;
+  background-clip:text;color:transparent}
+.sheet .tag{font-size:18px;color:#555;font-weight:700;letter-spacing:.5px}
+.sheet .tag img{height:26px;vertical-align:middle}
+.sheet .badge{position:absolute;top:10px;right:12px;font-size:16px;font-weight:900;
+  color:#b8860b;letter-spacing:1px}
+/* vệt mực ướt đi theo đầu in */
+.sheet .wet{position:absolute;left:0;right:0;height:10px;top:0;opacity:0;
+  background:linear-gradient(180deg,rgba(0,0,0,.18),transparent)}
+.sheet.printing .wet{opacity:1}
+
+/* ray + gantry */
+.rail{position:absolute;top:-20px;bottom:150px;width:26px;border-radius:13px;
+  background:linear-gradient(90deg,#6d7278,#e9edf1 35%,#9aa0a6 60%,#50555b)}
+.rail-left{left:120px}.rail-right{right:120px}
+#gantry{position:absolute;left:96px;right:96px;top:300px;height:70px;will-change:transform}
+#gantry .bar{position:absolute;left:0;right:0;top:22px;height:26px;border-radius:13px;
+  background:linear-gradient(180deg,#5d6268,#f1f4f7 40%,#a4aab0 65%,#4b5056);
+  box-shadow:0 14px 18px rgba(0,0,0,.45)}
+#gantry .bar::before,#gantry .bar::after{content:"";position:absolute;top:-14px;width:48px;height:54px;
+  border-radius:8px;background:linear-gradient(180deg,#3a3d42,#22252a)}
+#gantry .bar::before{left:0}#gantry .bar::after{right:0}
+#head{position:absolute;top:0;left:0;width:110px;height:70px;border-radius:10px;
+  background:linear-gradient(180deg,#30333a,#121418);box-shadow:0 18px 22px rgba(0,0,0,.55);
+  will-change:transform}
+#head .nozzle{position:absolute;left:43px;bottom:-12px;width:24px;height:14px;border-radius:0 0 6px 6px;background:#0a0a0a}
+#head .led{position:absolute;right:12px;top:10px;width:12px;height:12px;border-radius:50%;background:#2a2;box-shadow:0 0 8px #2f2}
+#head.busy .led{background:#f33;box-shadow:0 0 12px #f44;animation:blink .25s infinite alternate}
+@keyframes blink{to{opacity:.35}}
+
+.printer-body{position:absolute;left:150px;right:150px;bottom:20px;height:190px;border-radius:22px;
+  background:linear-gradient(180deg,#f4f4f2,#d9d8d3);box-shadow:0 -6px 0 #bcbab3 inset,0 20px 40px rgba(0,0,0,.6)}
+.printer-body .slot{position:absolute;left:58px;right:58px;top:0;height:16px;border-radius:0 0 8px 8px;background:#2a2a2a}
+.brandplate{position:absolute;bottom:26px;width:100%;text-align:center;color:#888;font-weight:900;letter-spacing:6px;font-size:22px}
+
+/* ------------------------------------------------ dải giữa ---- */
+#nowbar{position:absolute;left:0;right:0;top:var(--top);height:96px;display:flex;align-items:center;
+  justify-content:space-between;padding:0 40px;background:linear-gradient(90deg,#1b0d16,#2b0f1f,#1b0d16);
+  border-top:3px solid var(--accent);border-bottom:3px solid var(--accent);font-size:34px;font-weight:700;z-index:3}
+#now{display:flex;align-items:center;gap:16px;min-width:0}
+#nowText{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:700px}
+#now .dot{width:18px;height:18px;border-radius:50%;background:#3c3;flex:none}
+#now.busy .dot{background:var(--accent);animation:blink .4s infinite alternate}
+#queue{font-size:28px;opacity:.85}#queue b{color:var(--gold)}
+
+/* ------------------------------------------------ nửa dưới ---- */
+#bottom{position:absolute;left:0;right:0;bottom:0;top:calc(var(--top) + 96px);overflow:hidden;
+  background:radial-gradient(80% 70% at 40% 100%,#5a1a05,#170805 60%,#050303)}
+#bgvideo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.9}
+#fire{position:absolute;left:50px;bottom:-40px;width:560px;height:520px;filter:blur(18px);mix-blend-mode:screen}
+#fire i{position:absolute;bottom:0;width:150px;height:320px;border-radius:50% 50% 40% 40%;
+  background:radial-gradient(50% 60% at 50% 70%,#ffd25a,#ff7a18 45%,rgba(255,40,0,.0) 72%);
+  animation:flame 1.4s ease-in-out infinite alternate;transform-origin:bottom center}
+#fire i:nth-child(1){left:0;animation-delay:-.2s}#fire i:nth-child(2){left:70px;height:380px;animation-delay:-.7s}
+#fire i:nth-child(3){left:140px;height:440px;animation-delay:-.4s}#fire i:nth-child(4){left:210px;height:400px;animation-delay:-1s}
+#fire i:nth-child(5){left:280px;height:450px;animation-delay:-.1s}#fire i:nth-child(6){left:350px;height:360px;animation-delay:-.9s}
+#fire i:nth-child(7){left:410px;height:300px;animation-delay:-.5s}#fire i:nth-child(8){left:200px;height:520px;width:180px;animation-delay:-1.2s}
+@keyframes flame{0%{transform:scale(1,1) translateX(0)}50%{transform:scale(1.12,.92) translateX(8px)}100%{transform:scale(.92,1.1) translateX(-8px)}}
+#bgvideo.ok ~ #fire{display:none}
+
+#brand{position:absolute;left:50px;top:200px;width:520px}
+#logo{width:180px;height:180px;display:grid;place-items:center;font-size:190px;font-weight:900;font-style:italic;line-height:1;
+  background:linear-gradient(135deg,#00d2ff,#3a47d5 45%,#ff2d95);-webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 6px 18px rgba(80,120,255,.6))}
+#brandTitle{font-size:84px;font-weight:900;letter-spacing:4px;text-shadow:0 4px 18px rgba(0,0,0,.8)}
+#brandSub{font-size:30px;opacity:.9;margin-top:6px;text-shadow:0 2px 10px #000}
+
+#menu{position:absolute;right:30px;top:36px;width:400px;list-style:none;display:flex;flex-direction:column;gap:18px}
+#menu li{display:flex;align-items:center;gap:16px;background:rgba(20,20,24,.78);border:2px solid rgba(255,255,255,.14);
+  border-radius:16px;padding:12px 18px;backdrop-filter:blur(6px)}
+#menu .em{font-size:54px;width:64px;text-align:center}
+#menu .lbl{font-size:32px;font-weight:900}
+#menu .hint{font-size:22px;color:var(--gold)}
+#menu li.legendary{border-color:var(--gold);box-shadow:0 0 18px rgba(247,201,72,.4)}
+
+#board{position:absolute;right:30px;bottom:40px;width:400px;background:rgba(10,10,14,.78);border:2px solid rgba(247,201,72,.5);
+  border-radius:16px;padding:16px 20px}
+#board h3{font-size:30px;color:var(--gold);margin-bottom:10px}
+#boardList{list-style:none;display:flex;flex-direction:column;gap:10px}
+#boardList li{display:flex;align-items:center;gap:12px;font-size:26px}
+#boardList img{width:46px;height:46px;border-radius:50%;object-fit:cover;background:#333}
+#boardList .n{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#boardList .c{color:var(--gold);font-weight:900}
+#boardList .r{width:30px;font-weight:900;opacity:.8}
+
+/* toast */
+#toasts{position:absolute;left:40px;top:calc(var(--top) + 120px);display:flex;flex-direction:column;gap:10px;z-index:5;pointer-events:none}
+.toast{background:rgba(0,0,0,.72);border-left:6px solid var(--accent);padding:10px 18px;border-radius:10px;font-size:28px;
+  animation:tin .35s ease-out,tout .5s ease-in 3.5s forwards;max-width:560px}
+.toast b{color:var(--gold)}
+@keyframes tin{from{transform:translateX(-40px);opacity:0}}
+@keyframes tout{to{transform:translateX(-40px);opacity:0}}
+
+/* legendary banner */
+#legend{position:absolute;inset:0;display:grid;place-items:center;z-index:8;pointer-events:none;
+  background:radial-gradient(circle,rgba(255,200,60,.25),rgba(0,0,0,0) 60%)}
+#legend .legend-inner{text-align:center;animation:pop 3.2s ease forwards}
+#legend small{display:block;font-size:56px;font-weight:900;letter-spacing:10px;color:var(--gold);text-shadow:0 0 30px #f90}
+#legend b{display:block;font-family:"Dancing Script",cursive;font-size:130px;text-shadow:0 0 40px #ff2d95,0 6px 0 #000}
+@keyframes pop{0%{transform:scale(.3);opacity:0}12%{transform:scale(1.1);opacity:1}20%{transform:scale(1)}80%{opacity:1}100%{opacity:0;transform:scale(1.05)}}
+#fx{position:absolute;inset:0;width:100%;height:100%;z-index:9;pointer-events:none}

@@ -1,0 +1,9 @@
+[project]
+name = "tiktok-live-printer"
+version = "0.1.0"
+description = "TikTok LIVE: tặng quà -> in avatar người tặng lên overlay"
+requires-python = ">=3.11"
+dependencies = [
+    "TikTokLive>=7.0",
+    "aiohttp>=3.9",
+]

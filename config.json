@@ -1,0 +1,26 @@
+{
+  "tiktok_username": "@ten_kenh_cua_ban",
+  "port": 8765,
+
+  "brand": {
+    "title": "SHAN",
+    "subtitle": "Tặng quà để được in lên giấy!"
+  },
+
+  "rules": [
+    { "min_coins": 1,   "action": "print",     "label": "Print",          "emoji": "🌹", "hint": "1 xu" },
+    { "min_coins": 30,  "action": "big",       "label": "Big",            "emoji": "🍩", "hint": "30 xu" },
+    { "min_coins": 100, "action": "legendary", "label": "Legendary VIPP", "emoji": "💎", "hint": "100 xu" }
+  ],
+
+  "gift_overrides": {
+    "Rose": "print"
+  },
+
+  "max_copies_per_event": 5,
+  "max_queue": 60,
+
+  "print_seconds": { "print": 4, "big": 6, "legendary": 9 },
+
+  "sound": true
+}

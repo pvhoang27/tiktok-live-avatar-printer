@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Printer Panel</title>
+<style>
+  :root{--bg:#111318;--card:#1b1e25;--line:#2c313b;--fg:#e8eaf0;--mute:#8b93a3;--acc:#ff3b5c;--ok:#3ccf6e;--warn:#f7c948}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.45 system-ui,sans-serif;padding:16px}
+  main{max-width:980px;margin:0 auto;display:grid;gap:16px;grid-template-columns:1fr 1fr}
+  @media (max-width:760px){main{grid-template-columns:1fr}}
+  h1{max-width:980px;margin:0 auto 14px;font-size:20px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px}
+  .card h2{font-size:14px;text-transform:uppercase;letter-spacing:.08em;color:var(--mute);margin:0 0 12px}
+  .row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+  input{background:#0d0f13;border:1px solid var(--line);color:var(--fg);border-radius:8px;padding:9px 10px;font:inherit;min-width:0}
+  button{background:#262a33;border:1px solid var(--line);color:var(--fg);border-radius:8px;padding:10px 14px;font:inherit;cursor:pointer}
+  button:hover{border-color:var(--acc)}
+  button.gift{flex:1 1 140px;text-align:left}
+  button.gift b{display:block;font-size:16px}
+  button.gift small{color:var(--mute)}
+  #status{display:flex;align-items:center;gap:10px;font-weight:600}
+  #dot{width:12px;height:12px;border-radius:50%;background:var(--mute)}
+  #log{height:300px;overflow:auto;font:13px/1.5 ui-monospace,monospace;background:#0d0f13;border-radius:8px;padding:10px;margin:0;white-space:pre-wrap}
+  .mute{color:var(--mute)}
+  a{color:#7fb4ff}
+</style>
+</head>
+<body>
+<h1>🖨️ Bảng điều khiển máy in</h1>
+<main>
+  <section class="card">
+    <h2>Kết nối TikTok</h2>
+    <div id="status"><span id="dot"></span><span id="st">…</span></div>
+    <p class="mute" id="detail"></p>
+    <p>Hàng chờ in: <b id="q">0</b></p>
+    <p class="mute">Overlay cho OBS: <a href="/" target="_blank">/</a> (Browser Source 1080×1920)</p>
+  </section>
+
+  <section class="card">
+    <h2>Tặng quà thử</h2>
+    <div class="row">
+      <input id="name" placeholder="Tên người tặng (trống = ngẫu nhiên)" style="flex:1">
+      <input id="count" type="number" min="1" value="1" style="width:70px" title="Số lượng">
+    </div>
+    <div class="row" id="gifts"></div>
+    <div class="row">
+      <button id="spam">Spam 10 quà ngẫu nhiên</button>
+      <button id="clear">Xoá giấy + hàng chờ</button>
+      <button id="clearBoard">Reset bảng vàng</button>
+    </div>
+  </section>
+
+  <section class="card" style="grid-column:1/-1">
+    <h2>Sự kiện</h2>
+    <pre id="log"></pre>
+  </section>
+</main>
+<script>
+const $ = (s) => document.querySelector(s);
+const colors = { connected: "var(--ok)", demo: "var(--ok)", connecting: "var(--warn)", offline: "var(--warn)" };
+let rules = [];
+function log(t) { const l = $("#log"); l.textContent = new Date().toLocaleTimeString() + "  " + t + "\n" + l.textContent.slice(0, 20000); }
+async function gift(body) {
+  await fetch("/api/gift", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+}
+function connect() {
+  const ws = new WebSocket(`${location.protocol === "https:" ? "wss" : "ws"}://${location.host}/ws`);
+  ws.onmessage = (e) => {
+    const m = JSON.parse(e.data);
+    if (m.type === "status") {
+      $("#st").textContent = `${m.state}${m.user ? " · " + m.user : ""}`;
+      $("#detail").textContent = m.detail || "";
+      $("#dot").style.background = colors[m.state] || "var(--acc)";
+      log(`[status] ${m.state} ${m.detail || ""}`);
+    } else if (m.type === "config") {
+      rules = m.rules || [];
+      $("#gifts").innerHTML = "";
+      for (const r of rules) {
+        const b = document.createElement("button");
+        b.className = "gift";
+        b.innerHTML = `<b>${r.emoji || "🎁"} ${r.label}</b><small>${r.min_coins} xu → ${r.action}</small>`;
+        b.onclick = () => gift({ user: $("#name").value.trim(), gift: r.label, coins: r.min_coins, count: +$("#count").value || 1 });
+        $("#gifts").appendChild(b);
+      }
+    } else if (m.type === "queue") $("#q").textContent = m.size;
+    else if (m.type === "feed") log(`[quà] ${m.user} → ${m.gift} x${m.count} (${m.coins} xu) ⇒ ${m.action || "bỏ qua"}`);
+    else if (m.type === "comment") log(`[chat] ${m.user}: ${m.text}`);
+  };
+  ws.onclose = () => setTimeout(connect, 2000);
+}
+$("#spam").onclick = async () => {
+  for (let i = 0; i < 10; i++) {
+    const r = rules[Math.random() < .7 ? 0 : (Math.random() * rules.length) | 0];
+    await gift({ gift: r.label, coins: r.min_coins });
+  }
+};
+$("#clear").onclick = () => fetch("/api/clear", { method: "POST" });
+$("#clearBoard").onclick = () => fetch("/api/clear?board=1", { method: "POST" });
+connect();
+</script>
+</body>
+</html>
