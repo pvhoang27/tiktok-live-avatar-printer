@@ -140,10 +140,33 @@ Bạn **không cần** đổi link mỗi lần live, chương trình tự tìm p
    - Service: **Custom…**
    - Server và Stream Key: lấy từ [tiktok.com/live/producer](https://www.tiktok.com/live/producer)
 
-### Với TikTok LIVE Studio
+### Với TikTok LIVE Studio (Windows / Mac)
 
-Thêm một nguồn dạng **Link / Browser / Web** (tên gọi tuỳ phiên bản) trỏ tới `http://localhost:8765/`, kích thước 1080×1920.
-Nếu phiên bản của bạn không có loại nguồn này, hãy dùng OBS.
+LIVE Studio **không nhận link `localhost`**, nên hãy dùng một trong 2 cách sau.
+
+**Cách 1: Quay cửa sổ (đơn giản nhất)**
+
+1. Mở `http://localhost:8765/` bằng Chrome.
+   Mẹo: chạy `chrome --app=http://localhost:8765/ --window-size=540,960` để có cửa sổ gọn, không có thanh địa chỉ.
+2. Trong LIVE Studio thêm nguồn **Window Capture / Quay cửa sổ**, rồi chọn cửa sổ Chrome đó.
+3. Không thu nhỏ (minimize) cửa sổ Chrome trong lúc live, vì như vậy nó sẽ ngừng vẽ.
+
+**Cách 2: OBS Virtual Camera (nét nhất, đầy đủ hiệu ứng)**
+
+1. Dựng cảnh trong OBS như phần **Với OBS** ở trên (bỏ qua bước Settings → Stream).
+2. Trong OBS bấm **Start Virtual Camera**.
+3. Trong LIVE Studio thêm nguồn **Camera**, rồi chọn **OBS Virtual Camera**.
+
+### ❓ Vì sao TikTok không nhận `localhost`?
+
+`localhost` có nghĩa là **"chính máy này"**, nên chỉ phần mềm chạy **trên máy bạn** (Chrome, OBS) mới mở được link đó.
+Nếu dán `localhost` vào trang web hay ô link của TikTok, server TikTok sẽ đi tìm trên **máy của TikTok**, nên không thấy gì.
+
+TikTok **không cần** link này. Luồng đúng là:
+
+```
+localhost:8765 ──► OBS / LIVE Studio quay lại thành video ──► gửi VIDEO lên TikTok
+```
 
 ---
 
@@ -231,6 +254,8 @@ curl -X POST "http://localhost:8765/api/clear?board=1"  # reset bảng vàng
 | Panel báo **offline** | Kênh chưa live, hoặc sai username trong `config.json`. Server sẽ tự thử lại. |
 | Panel báo **error** liên tục | Có thể TikTok vừa thay đổi hệ thống. Chạy `uv lock --upgrade && uv sync` để cập nhật thư viện, rồi chạy lại. |
 | Panel báo connected nhưng tặng quà không in | Xem terminal có dòng `Quà: ... -> print` không. Nếu có mà OBS không chạy thì **Refresh** nguồn Browser. |
+| TikTok / LIVE Studio báo link `localhost` không hợp lệ | Bình thường: TikTok không mở được link trên máy bạn. Dùng OBS Browser Source, hoặc quay cửa sổ / Virtual Camera (xem mục 6). |
+| Nguồn Browser trong OBS trắng xoá | Kiểm tra `uv run server.py` **đang chạy**. Thử URL `http://127.0.0.1:8765/` thay cho `localhost`. |
 | OBS không có tiếng máy in | Tick **Control audio via OBS** trong nguồn Browser. |
 | Màn hình bị lệch hoặc thừa viền | Canvas OBS và nguồn Browser đều phải là **1080×1920**. |
 | Báo cổng 8765 đang bận | Có server cũ chưa tắt, hoặc chạy cổng khác: `uv run server.py --port 9000` (nhớ đổi URL trong OBS). |
