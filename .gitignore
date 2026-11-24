@@ -1,3 +1,41 @@
+# --- Python / uv ---
 .venv/
+venv/
 __pycache__/
-overlay/media/*.mp4
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# --- Bí mật: KHÔNG BAO GIỜ đẩy lên ---
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+secrets.json
+config.local.json
+cookies*.txt
+*sessionid*
+
+# --- Media nặng / có thể dính bản quyền ---
+overlay/media/*
+!overlay/media/.gitkeep
+*.mp4
+*.mov
+*.mkv
+*.webm
+
+# --- Log, file tạm ---
+*.log
+logs/
+*.tmp
+*.bak
+
+# --- Editor / hệ điều hành ---
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
